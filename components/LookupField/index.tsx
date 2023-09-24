@@ -66,29 +66,28 @@ const LookupField: Component<{
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (document.activeElement === inputEl && selectList().length > 0) {
-      if (event.key === "ArrowUp") {
-        if (currentKeyFocus() > 0) {
-          setCurrentKeyFocus((prev) => prev - 1);
-          selectDivRef?.scrollBy({
-            top: -selectGroupRefs[groupIndexes()[currentKeyFocus()]].clientHeight,
-            behavior: 'smooth'
-          });
-        }
+      
+      if (event.key === "ArrowUp" && currentKeyFocus() > 0) {
+        setCurrentKeyFocus((prev) => prev - 1);
+        selectDivRef?.scrollBy({
+          top: -selectGroupRefs[groupIndexes()[currentKeyFocus()]].clientHeight,
+          behavior: 'auto'
+        });
+        return;
       }
   
-      if (event.key === "ArrowDown") {
-        if (currentKeyFocus() < selectList().length - 1) {
-          setCurrentKeyFocus((prev) => prev + 1);
-          selectDivRef?.scrollBy({
-            top: selectGroupRefs[groupIndexes()[currentKeyFocus()]].clientHeight,
-            behavior: 'smooth'
-          });
-        }
+      if (event.key === "ArrowDown" && currentKeyFocus() < selectList().length - 1) {
+        setCurrentKeyFocus((prev) => prev + 1);
+        selectDivRef?.scrollBy({
+          top: selectGroupRefs[groupIndexes()[currentKeyFocus()]].clientHeight,
+          behavior: 'auto'
+        });
+        return;
       }
   
       if (event.key === "Enter") {
         selectGroupRefs[groupIndexes()[currentKeyFocus()]].click();
-        selectActions(currentKeyFocus());
+        return;
       }
     }
   }

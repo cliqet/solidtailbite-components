@@ -45,5 +45,6 @@
 
 .selectElActive {
   @apply
-    bg-slate-300;
+    bg-slate-300
+    dark:bg-slate-800;
 }
