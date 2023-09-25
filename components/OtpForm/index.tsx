@@ -104,7 +104,14 @@ const OtpForm: Component<OtpFormConfig> = (props) => {
       const pastedText = clipboardData.getData('text');
 
       otpGroupRefs.forEach((inputEl, i) => {
-        inputEl.value = pastedText[i];
+        // handle code with gap when copying. e.g. 12 456
+        if(pastedText[i] !== " " && props.numbersOnly && !isNaN(pastedText[i])) {
+          inputEl.value = pastedText[i];
+        }
+
+        if(pastedText[i] !== " " && !props.numbersOnly) {
+          inputEl.value = pastedText[i];
+        }
       });
     }
   }
