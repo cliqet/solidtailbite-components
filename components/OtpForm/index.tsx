@@ -209,6 +209,7 @@ const OtpForm: Component<OtpFormConfig> = (props) => {
                   class={styles.otpInputField}
                   type="text"
                   id={`${index()}`}
+                  inputmode={props.numbersOnly ? "numeric" : "text" }
                   required
                   autofocus={!index()}
                   ref={otpGroupRefs[index()]}
