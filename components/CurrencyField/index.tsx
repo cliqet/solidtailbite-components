@@ -19,7 +19,7 @@ const CurrencyField: Component<{
   placeholder: string;
   symbolComponent?: JSX.Element | Component;
   locale?: LocaleType;
-  onInputFn: (value: string) => any;
+  onInputFn: (value: string, keyPressed: string) => any;
 }> = (props) => {
   let inputRef: HTMLInputElement;
   const [rawValue, setRawValue] = createSignal("");
@@ -29,24 +29,28 @@ const CurrencyField: Component<{
   const handleKeyUp = (e: KeyboardEvent) => {
     let formattedValue;
     let valueAsNum;
+
+    if (e.key === "Backspace") {
+      let rawValueAsText = `${rawValue()}`;
+      rawValueAsText = rawValueAsText.slice(0, -1);
+      setRawValue(rawValueAsText);
+      valueAsNum = Number(rawValue());
+      formattedValue = new Intl.NumberFormat('en-US').format(valueAsNum);
+      setTextValue(formattedValue as string);
+      inputRef.value = textValue();
+
+      props.onInputFn(rawValue(), e.key);
+
+      return;
+    }
+
     if (allowedChars.includes(e.key)) {
         setRawValue((prev) => prev + e.key);
         valueAsNum = Number(rawValue());
         formattedValue = new Intl.NumberFormat(
             `${props.locale ?? "en-US"}`
         ).format(valueAsNum);
-    } else {
-        valueAsNum = Number(rawValue());
-        formattedValue = new Intl.NumberFormat(
-            `${props.locale ?? "en-US"}`
-        ).format(valueAsNum);
-    }
-    setTextValue(formattedValue as string);
-
-    // reset if format becomes invalid
-    if (textValue() === "NaN") {
-        setRawValue("");
-        setTextValue("");
+        setTextValue(formattedValue as string);
     }
 
     // if last typed character is "." , display it in text field as either "." or "," 
@@ -61,21 +65,7 @@ const CurrencyField: Component<{
     }
     inputRef.value = textValue();
     
-    props.onInputFn(rawValue());
-  }
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Backspace") {
-        let rawValueAsText = `${rawValue()}`;
-        rawValueAsText = rawValueAsText.slice(0, -1);
-        setRawValue(rawValueAsText);
-        let valueAsNum = Number(rawValue());
-        let formattedValue = new Intl.NumberFormat('en-US').format(valueAsNum);
-        setTextValue(formattedValue as string);
-        inputRef.value = textValue();
-
-        props.onInputFn(rawValue());
-    }
+    props.onInputFn(rawValue(), e.key);
   }
 
   return (
@@ -90,13 +80,13 @@ const CurrencyField: Component<{
         ref={inputRef!}
         type="text"
         id={props.id}
+        inputmode="numeric"
         class={styles.currencyInput}
         classList={{
           "rounded-l-lg": Boolean(!props.symbolComponent),
         }}
         placeholder={props.placeholder}
         onKeyUp={(e) => handleKeyUp(e)}
-        onKeyDown={(e) => handleKeyDown(e)}
       />
     </div>
   );
